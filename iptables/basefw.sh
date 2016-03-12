@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+IPT=/usr/sbin/iptables
+
 #Home address
 HOSTNAME=<REDACTED>
 HOME=$(host $HOSTNAME | grep -iE "[1-9]+\.[0-9]+\.[0-9]+\.[0-9]+" |cut -f4 -d' '|head -n 1)
