@@ -15,6 +15,7 @@ ALLOW_IP=$WORK,$OTHER
 #allowed port e.g. ssh
 ALLOW_PORTS=<REDACTED>
 
+
 # Clear ALL iptables settings
 $IPT -F
 $IPT -X
@@ -29,27 +30,22 @@ $IPT -A INPUT -i lo -j ACCEPT
 #new chains
 $IPT -N home
 $IPT -N log-and-drop
-#new chains to throttle connections
-$IPT -N traffic_throttle
-$IPT -N recent_limit
+
 
 
 
 #accept packets for already established connections
 $IPT -A INPUT -s 0/0 -m state --state RELATED,ESTABLISHED -j ACCEPT
-# add rate limited connections 
-iptables -A recent_limit -m recent --name input_trap --rcheck --seconds 60 --hitcount 10 --rttl -j DROP
-#limit of 6 connections from the same IP
-iptables -A traffic_throttle -m connlimit --connlimit-above 6 -j DROP
+
 
 #add rule to the home chain to accept anything from home
 $IPT -A home -s $HOME -j ACCEPT 
 #send packets to the home chain
 $IPT -A INPUT -j home
 
-iptables -A recent_limit -m recent --name input_trap --set -j RETURN
-iptables -A INPUT -s 0/0 -p TCP -m multiport --dports $ALLOW_PORTS --syn -j traffic_throttle
-iptables -A traffic_throttle -m limit --limit 6/m --limit-burst 1 -j ACCEPT
+#allow webports
+iptables -A INPUT -s 0/0 -p TCP -m multiport --dports 80,443--syn -j ACCEPT
+
 
 #allow other IP on restricted ports
 $IPT -A INPUT -s $ALLOW_IP -p tcp --dport $ALLOW_PORTS -j ACCEPT
