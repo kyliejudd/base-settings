@@ -15,7 +15,6 @@ ALLOW_IP=$WORK,$OTHER
 #allowed port e.g. ssh
 ALLOW_PORTS=<REDACTED>
 
-
 # Clear ALL iptables settings
 $IPT -F
 $IPT -X
@@ -31,21 +30,17 @@ $IPT -A INPUT -i lo -j ACCEPT
 $IPT -N home
 $IPT -N log-and-drop
 
-
-
-
 #accept packets for already established connections
 $IPT -A INPUT -s 0/0 -m state --state RELATED,ESTABLISHED -j ACCEPT
 
-
 #add rule to the home chain to accept anything from home
 $IPT -A home -s $HOME -j ACCEPT 
+
 #send packets to the home chain
 $IPT -A INPUT -j home
 
 #allow webports
 iptables -A INPUT -s 0/0 -p TCP -m multiport --dports 80,443--syn -j ACCEPT
-
 
 #allow other IP on restricted ports
 $IPT -A INPUT -s $ALLOW_IP -p tcp --dport $ALLOW_PORTS -j ACCEPT
