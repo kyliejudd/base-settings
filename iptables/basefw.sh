@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
+#redhat/centos
 IPT=/usr/sbin/iptables
+#debian/ubuntu
+IPT=/sbin/iptables
 
 #Home address
 HOSTNAME=<REDACTED>
